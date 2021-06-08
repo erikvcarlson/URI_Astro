@@ -1,0 +1,21 @@
+from os import listdir
+
+file_path = '/lustre/aoc/observers/nm-11325/Rest_of_Survey'
+
+list_of_files = os.listdir(file_path)
+
+print('Files Compiled into a List')
+
+validation_string = 'There is a total of ' + str(len(list_of_files)) +' files.'
+print(validation_string)
+
+for x in range(len(list_of_files)):
+    start_string = 'Working on File ' + str(x+1)
+    print(start_string)
+    asdm_name = list_of_files[x]
+    vis_name = 'vis' + str(x) + '.ms'
+    list_name = 'listobs' + str(x) + '.txt'
+    importasdm(asdm = asdm_name, vis = vis_name)
+    listobs(vis = vis_name, listfile = list_name)
+    output_string = 'File Number '  + str(x+1) +' is done.'
+    print(output_string)

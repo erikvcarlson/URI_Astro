@@ -1,0 +1,26 @@
+import time
+
+
+pol_thresh= '0.00009Jy/beam'
+
+
+imregrid(imagename='J1655+3242_C_I_Restored.im/',output='C_I.im',template='J1655+3242_X_I_Restored.im/') 
+imregrid(imagename='J1655+3242_C_Q_Restored.im/',output='C_Q.im',template='J1655+3242_X_Q_Restored.im/')
+imregrid(imagename='J1655+3242_C_U_Restored.im/',output='C_U.im',template='J1655+3242_X_U_Restored.im/')
+
+time.sleep(10)
+
+immath(outfile='spec_index.im',expr='spectralindex(IM0,IM1)',imagename=['C_I.im','J1655+3242_X_I_Restored.im']);
+
+immath(imagename=['C_Q.im/','C_U.im'],expr ='sqrt(IM0*IM0 +IM1*IM1)',outfile='linear_pol_intensity_C.im')
+immath(imagename=['C_Q.im/','C_U.im'],expr ='sqrt(IM0*IM0 +IM1*IM1)',outfile='linear_pol_intensity_X.im')
+
+immath(outfile='pol_angle_X.im',mode='pola',imagename=['J1655+3242_X_Q_Restored.im/','J1655+3242_X_U_Restored.im'],polithresh= pol_thresh)
+immath(outfile='pol_angle.im',mode='pola',imagename=['C_Q.im/','C_U.im'],polithresh= pol_thresh)
+
+immath(outfile='rot_im_2.im', expr='IM0-IM1',imagename=['pol_angle_X.im','pol_angle.im']) 
+
+exportfits(imagename='spec_index.im',fitsimage='spec_index.fits',overwrite= True)
+exportfits(imagename='linear_pol_intensity_C.im',fitsimage='linear_pol_intensity_C.fits',overwrite= True)
+exportfits(imagename='linear_pol_intensity_X.im',fitsimage='linear_pol_intensity_X.fits',overwrite= True)
+exportfits(imagename='rot_im_2.im',fitsimage='rot_im.fits',overwrite= True)

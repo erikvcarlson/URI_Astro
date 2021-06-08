@@ -1,0 +1,106 @@
+myvis='2.ms'
+
+listobs(vis=myvis,listfile='listobs.txt');plotants(vis=myvis,figfile='plotants.png')
+
+myvis='2.ms'
+fluxcal='38'
+phasecal='13'
+target='16'
+fluxandphase= fluxcal +',' + phasecal
+ant='ea22'
+
+clearcal(vis=myvis)
+flagdata(vis=myvis,mode='unflag')
+flagcmd(vis=myvis,inpmode='table', action='apply',useapplied=True) 
+gencal(vis=myvis,caltable='gceff',caltype='gceff')
+myopacity=plotweather(vis=myvis,doPlot=False)
+gencal(vis=myvis,caltable='opacity',caltype='opac',parameter=myopacity,spw='0~15')
+
+
+setjy(vis=myvis,field=fluxcal,modimage='3C286_C.im',scalebychan=True)
+
+gaincal(vis=myvis,field=fluxcal,spw='0~15',caltable='G0_05',solint='int',refant=ant,minblperant=3,minsnr=0,solnorm=False,gaintype='G',calmode='p',parang=True)
+
+
+gaincal(vis=myvis,field=fluxcal,gaintype='K',caltable='K_05',solint='inf',combine='scan',minsnr=3,gaintable='G0_05',gainfield=fluxcal,interp='nearest',spw='0~15',solnorm=False,refant=ant,parang=True)
+
+bandpass(vis=myvis,field=fluxcal,spw='0~15',fillgaps=10,caltable='B_05',gaintable=['G0_05','K_05','opacity','gceff'],gainfield=[fluxcal,fluxcal,'',''],interp=['nearest','nearest','nearest','nearest'],bandtype='B',minblperant=3,minsnr=3,solnorm=False,refant=ant,solint='inf',combine='scan',parang=True)
+
+
+#
+gaincal(vis=myvis,field=fluxandphase,spw='0~15',gaintable=['K_05','B_05','opacity','gceff'],caltable='G_05',refant=ant,interp=['nearest','nearest','nearest','nearest'],gainfield=[fluxcal,fluxcal,'',''],solnorm=False,solint='int',gaintype='G',calmode='ap',parang=True)
+#
+fluxscale(vis=myvis,caltable='G_05',reference=fluxcal,transfer=[phasecal],fluxtable='F_05')
+
+#
+# Calibrate Flux:
+applycal(vis=myvis,spw='0~15',field=fluxcal,parang=True,gaintable=['K_05','B_05','F_05','opacity','gceff'],gainfield=[fluxcal,fluxcal,fluxcal,'',''],interp=['nearest','nearest','nearest','nearest','nearest'])
+#
+# Calibrate Phase:
+applycal(vis=myvis,spw='0~15',field=phasecal,parang=True,gaintable=['K_05','B_05','F_05','opacity','gceff'],gainfield=[fluxcal,fluxcal,phasecal,'',''],interp=['nearest','nearest','nearest','nearest','nearest'])
+
+flagdata(vis=myvis,mode='clip',clipminmax=[0,100],clipzeros=True,datacolumn='corrected',field=fluxandphase);
+#plotms(vis=myvis,ydatacolumn='corrected',xaxis='freq',field=phasecal,spw='0~15',correlation='RR,LL',iteraxis='field')
+
+
+
+flagdata(vis=myvis, mode='rflag',spw='0~15', datacolumn ='corrected', action = 'apply',display='',field=fluxandphase);
+
+
+
+clearcal(vis=myvis)
+
+
+setjy(vis=myvis,field=fluxcal,modimage='3C286_C.im',scalebychan=True)
+
+gaincal(vis=myvis,field=fluxcal,spw='0~15',caltable='G1_05',solint='int',refant=ant,minblperant=3,minsnr=0,solnorm=False,gaintype='G',calmode='p',parang=True)
+
+
+
+gaincal(vis=myvis,field=fluxcal,gaintype='K',caltable='K1_05',solint='inf',combine='scan',minsnr=3,gaintable='G1_05',gainfield=fluxcal,interp='nearest',spw='0~15',solnorm=False,refant=ant,parang=True)
+
+bandpass(vis=myvis,field=fluxcal,spw='0~15',fillgaps=10,caltable='B1_05',gaintable=['G1_05','K1_05','opacity','gceff'],gainfield=[fluxcal,fluxcal,'',''],interp=['nearest','nearest','nearest','nearest'],bandtype='B',minblperant=3,minsnr=3,solnorm=False,refant=ant,solint='inf',combine='scan',parang=True)
+
+
+#
+gaincal(vis=myvis,field=fluxandphase,spw='0~15',gaintable=['K1_05','B1_05','opacity','gceff'],caltable='G1_05',refant=ant,interp=['nearest','nearest','nearest','nearest'],gainfield=[fluxcal,fluxcal,'',''],solnorm=False,solint='int',gaintype='G',calmode='ap',parang=True)
+#
+fluxscale(vis=myvis,caltable='G1_05',reference=fluxcal,transfer=[phasecal],fluxtable='F1_05')
+
+#
+# Calibrate Flux:
+applycal(vis=myvis,spw='0~15',field=fluxcal,parang=True,gaintable=['K1_05','B1_05','F1_05','opacity','gceff'],gainfield=[fluxcal,fluxcal,fluxcal,'',''],interp=['nearest','nearest','nearest','nearest','nearest'])
+#
+# Calibrate Phase:
+applycal(vis=myvis,spw='0~15',field=phasecal,parang=True,gaintable=['K1_05','B1_05','F1_05','opacity','gceff'],gainfield=[fluxcal,fluxcal,phasecal,'',''],interp=['nearest','nearest','nearest','nearest','nearest'])
+
+
+applycal(vis=myvis,spw='0~15',field=target,parang=True,gaintable=['K1_05','B1_05','F1_05','opacity','gceff'],gainfield=[fluxcal,fluxcal,phasecal,'',''],interp=['nearest','nearest','nearest','nearest','nearest'])
+
+
+flagdata(vis=myvis,mode='unflag',field=target)
+flagdata(vis=myvis,mode='clip',clipminmax=[0,100],clipzeros=True,datacolumn='corrected',field=target);
+
+
+plotms(vis=myvis,ydatacolumn='corrected',xaxis='time',field=target,spw='4~7',correlation='RR,LL',iteraxis = 'field')
+
+flagdata(vis=myvis,mode='quack',quackmode='beg',quackinterval=15.0,datacolumn='corrected',field=target,spw='0~15');
+flagdata(vis=myvis, mode='rflag',spw='9~15', datacolumn ='corrected', action = 'apply',display='',field=target);
+exportuvfits(vis=myvis,fitsfile=target,field=target,spw='0~15',datacolumn='corrected',padwithflags=True,overwrite=True);
+
+exportuvfits(vis=myvis,fitsfile=target,datacolumn='data',padwithflags=True,overwrite=True);
+
+
+split(vis=myvis, field = target, width  = 64, outputvis = '1.ms', correlation='RR,LL') 
+
+
+targets = [0,1,2,3,4,5,6,7,8,10,11,12,14,15,16,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,36]
+for x in targets:
+    target = str(x)
+    split_name = str(x) + '.ms'
+    split(vis=myvis, field = target, width  = 64, outputvis = split_name, correlation='RR,LL') 
+    exportuvfits(vis=split_name,fitsfile=target,datacolumn='data',padwithflags=True,overwrite=True);
+
+
+
+

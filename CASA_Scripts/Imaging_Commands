@@ -1,0 +1,61 @@
+#split off final calibrated data
+
+split(vis=myvis, field = target,spw='4~7', width  = 64, outputvis = 'J0807+0432.ms')
+
+#reset myvis variable and plot the data for inspections
+
+myvis = 'J0807+0432.ms'
+plotms(vis=myvis,ydatacolumn='corrected',xaxis='uvwave',correlation='RR,LL',field='0')
+
+delmod(vis=myvis,field='0',otf=True)
+clearcal(vis=myvis)
+
+
+#also check Phase vs. UVDist 
+
+#initalize the files by running tclean with no niters
+tclean(vis=myvis, imagename='J0807+0432',specmode='mfs',imsize = 2048, cell = '40mas',weighting = 'uniform', threshold='0.0mJy',interactive=True)
+
+#rerun with a niter set
+tclean(vis=myvis, imagename='J0807+0432',specmode='mfs',imsize = 2048, cell = '40mas',weighting = 'uniform', threshold='0.0mJy',interactive=True, niter = 250)
+
+
+#note weighting can be either natural, uniform, briggs, superuniform or radial
+
+
+tclean(vis=myvis, imagename='J0807+0432',specmode='mfs',imsize = 2048, cell = '40mas',weighting = 'natural', threshold='0.0mJy',interactive=True, niter = 250)
+#go to Data > Adjust Data Display Display > Color Wedge > Display = Yes for colorbar. Select auto apply
+#middle mouse button is colorbar
+
+#select oval clean box. Place on clean are and double click to commit. Then click green button. Only use red button to end 
+
+#set iterations left and maxcycle niter left to the number of clean components we want and a reasonable cycleniter approx 1/10. 
+
+gaincal(vis=myvis,caltable='self_22.pcal',
+        solint='int',combine='',gaintype='T',
+        refant='ea22',spw='',minblperant=3,
+        calmode='p',minsnr=2)
+#not all selfcalibrations produce usable results
+
+gaincal(vis=myvis,caltable='self_3.pcal',
+        solint='int',combine='',gaintype='T',
+        refant='ea22',spw='',minblperant=3,
+        calmode='ap',minsnr=2,solnorm=True)
+        
+        
+applycal(vis=myvis,field='',gaintable=['self_22.pcal'],calwt=False)
+
+#when generating a larger than normal image you need to use a different imagename
+
+
+#go to Data > Open > Image > Contour Map
+
+
+starting_contour = 0.8
+contour_array = [starting_contour/100]
+while starting_contour < 100:
+    starting_contour = starting_contour * sqrt(2)
+    if starting_contour < 100:
+        contour_array.append(starting_contour/100)
+
+

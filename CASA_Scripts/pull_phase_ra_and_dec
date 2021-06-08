@@ -1,0 +1,36 @@
+import csv
+
+with open('phase_edited.txt', 'r') as oldfile, open('All_Phase_Calibrators.csv','w') as newfile:
+    for line in oldfile:
+        RA_DEC = line
+        start_index = RA_DEC.find('J2000')
+        end_index = RA_DEC.find('"')
+        RA_DEC = RA_DEC[start_index+9:end_index+1]
+        
+        RA = RA_DEC.split(' ')[0]
+        DEC = RA_DEC.split(' ')[-1]
+        
+        hours_RA = RA.split('h')[0]
+        minutes_RA = RA.split('h')[1].split('m')[0]
+        seconds_RA = RA.split('h')[1].split('m')[1].split('s')[0]
+        
+        hours_RA = float(hours_RA)
+        minutes_RA = float(minutes_RA)
+        seconds_RA = float(seconds_RA)
+        
+        RA = ((hours_RA + (minutes_RA/60) + (seconds_RA/3600))) *15
+        
+        hours_Dec = float(DEC.split('d')[0])
+        minutes_Dec = float(DEC.split('d')[1].split("'")[0])
+        seconds_Dec = float(DEC.split('d')[1].split("'")[1].split('"')[0])
+        
+        DEC = (hours_Dec+ minutes_Dec/60 + seconds_Dec / 3600)
+        phase_calibrator = [RA,DEC]
+        
+        
+        phase_writer = csv.writer(newfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        phase_writer.writerow(phase_calibrator)
+        print('Calibrator has been written!')
+        
+        
+       

@@ -2,9 +2,9 @@
 #Ensure that there are no other measurement sets in that working directory or they will be deleted
 
 #Change the following parameters
-fitsf = 'J1058+0443_A_C_PE2_12B-230' #uvfits name
-spectral_windows_to_split = '0~4' #selected spectral windows
-pseudo_band = 'CS' #pseudo_band; required for naming, give spectral window if not selecting a sub-band
+fitsf = '2_uvfits' #uvfits name
+spectral_windows_to_split = '0~15' #selected spectral windows
+pseudo_band = 'C' #pseudo_band; required for naming, give spectral window if not selecting a sub-band
 
 #general variable naming for the various measurement sets created by CASA
 split_name = fitsf + pseudo_band + '.ms'

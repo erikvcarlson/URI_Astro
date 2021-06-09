@@ -5,6 +5,7 @@
 import urllib
 import urllib.request
 import re
+import pandas
 
 url = "https://archive-new.nrao.edu/vlass/quicklook/listing.txt"
 file = urllib.request.urlopen(url)
@@ -25,8 +26,9 @@ while a ==0:
     except: 
         print("Incorrect Values Entered")
 
-
-#
+df = pd.read_csv("Tiles_NoHead.tsv",sep='\t')
+df.head()
+"""
 for line in file:
     decoded_line = line.decode("utf-8")
     try:
@@ -58,6 +60,7 @@ for line in file:
             break
     except:
         pass
+
 try:
     url = archive_search_file
     search_file_for_ms =  urllib.request.urlopen(url)
@@ -71,3 +74,4 @@ try:
             print(measurement_set_name)
 except:
     print('Error Occured. It is possible there is no VLASS dataset for the data in question.')
+"""

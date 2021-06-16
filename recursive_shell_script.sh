@@ -45,7 +45,7 @@ echo '##PBS -l vmem="16gb"    # physmem + virtmem used by job. Kills job if exce
 echo '##PBS -l pvmem="16gb"    # physmem + virtmen used by any process. Kills job if exceeded.' >> run_casa-${i}-${NAMING}.sh 
 echo '##PBS -l nodes=1:ppn=4       # default is 1 core on 1 node' >> run_casa-${i}-${NAMING}.sh 
 #change the below line to your email address. 
-echo '#PBS -M erikvcarlson@gmail.com      # default is submitter'>> run_casa-${i}-${NAMING}.sh 
+echo '#PBS -M erikvcarlson@nrao.edu      # default is submitter'>> run_casa-${i}-${NAMING}.sh 
 echo '##PBS -W umask=0117          # default is 0077'  >> run_casa-${i}-${NAMING}.sh 
 echo '##PBS -l walltime=3:0:0:0      # default is 100 days.  This set it to 1 day'  >> run_casa-${i}-${NAMING}.sh 
 echo '#PBS -q batch      # default is the rhel6 queue, set this to rhel7 for testing'  >> run_casa-${i}-${NAMING}.sh 

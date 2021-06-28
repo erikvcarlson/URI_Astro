@@ -1,9 +1,10 @@
 def find_fields(msfile='', distance='0deg', phase_center=None, matchregex=''):
     import numpy
+    import math
     from pipeline.infrastructure import casatools as casa_tools
     # Created STM 2016-May-16 use center direction measure
     # Returns list of fields from msfile within a rectangular box of size distance
-    #example: find_fields(msfile='VLASS2.1.sb38499285.eb38509861.59047.50492306713.ms',phase_center='J2000 08:07:57.5 +004.32.34.6',distance='1deg')
+    #example: find_fields(msfile='VLASS2.1_Guide.ms/',phase_center='J2000 08h07m57.5 +4d32m34.6',distance='23arcmin')
     qa = casa_tools.quanta
     me = casa_tools.measures
     tb = casa_tools.table
@@ -64,6 +65,7 @@ def find_fields(msfile='', distance='0deg', phase_center=None, matchregex=''):
     print('Looking for fields with maximum separation {}'.format(distance))
     nreject = 0
     skipmatch = matchregex == '' or matchregex == []
+
     for i in range(nf):
         dd = ddirs[i]['dir']
         dd_ra = dd['m0']['value']
@@ -75,10 +77,13 @@ def find_fields(msfile='', distance='0deg', phase_center=None, matchregex=''):
         sep_ra_sky = sep_ra * numpy.cos(dd_dec)
 
         sep_dec = abs(dd_dec - center_dec)
-
+        print(sep_dec)
         ddirs[i]['offset_ra'] = sep_ra_sky
         ddirs[i]['offset_ra'] = sep_dec
-
+        
+        #print(sep_dec)
+        if sep_dec <= maxrad:
+            print('hello world')
         if sep_ra_sky <= maxrad and sep_dec <= maxrad:
             if skipmatch:
                 fieldlist.append(i)
@@ -102,5 +107,7 @@ def find_fields(msfile='', distance='0deg', phase_center=None, matchregex=''):
     for i in range(0,len(fieldlist)):
         fieldlist[i] = str(fieldlist[i])
     fieldlist = ",".join(fieldlist)
+    
+    print("Maximum Radian = " + str(maxrad))
 
     return fieldlist
